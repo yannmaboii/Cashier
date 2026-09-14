@@ -5,4 +5,6 @@ export class TransaksiItemDto {
 
 export class CreateTransaksiDto {
   items: TransaksiItemDto[];
+  alamatPengiriman?: string;
+  metodePembayaran?: string;
 }

@@ -5,6 +5,8 @@ import {
   Body,
   Param,
   Delete,
+  Patch,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { TransaksiService } from './transaksi.service.js';
@@ -18,10 +20,16 @@ import { Roles } from '../auth/roles.decorator.js';
 export class TransaksiController {
   constructor(private readonly transaksiService: TransaksiService) {}
 
-  @Roles('admin', 'kasir')
+  @Roles('admin', 'kasir', 'customer')
   @Post()
-  create(@Body() createTransaksiDto: CreateTransaksiDto) {
-    return this.transaksiService.create(createTransaksiDto);
+  create(@Body() createTransaksiDto: CreateTransaksiDto, @Req() req: any) {
+    return this.transaksiService.create(createTransaksiDto, req.user);
+  }
+
+  @Roles('customer')
+  @Get('saya')
+  findMine(@Req() req: any) {
+    return this.transaksiService.findMine(req.user.email);
   }
 
   @Roles('admin', 'kasir')
@@ -30,10 +38,22 @@ export class TransaksiController {
     return this.transaksiService.findAll();
   }
 
-  @Roles('admin', 'kasir')
+  @Roles('admin', 'kasir', 'customer')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.transaksiService.findOne(+id);
+  }
+
+  @Roles('customer')
+  @Patch(':id/bayar')
+  bayar(@Param('id') id: string, @Req() req: any) {
+    return this.transaksiService.bayar(+id, req.user.email);
+  }
+
+  @Roles('admin', 'kasir')
+  @Patch(':id/status')
+  updateStatus(@Param('id') id: string, @Body() body: { status: string }) {
+    return this.transaksiService.updateStatus(+id, body.status);
   }
 
   @Roles('admin')

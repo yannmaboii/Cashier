@@ -34,4 +34,28 @@ export class AuthService {
       },
     };
   }
+
+  async register(email: string, password: string) {
+    const existing = await this.userService.findByEmail(email);
+    if (existing) {
+      throw new UnauthorizedException('Email sudah terdaftar');
+    }
+
+    const user = await this.userService.create({
+      email,
+      password,
+      role: 'customer',
+    });
+
+    const payload = { sub: user.id, email: user.email, role: user.role };
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+    };
+  }
 }

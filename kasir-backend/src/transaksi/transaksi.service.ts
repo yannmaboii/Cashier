@@ -1,79 +1,64 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Transaksi, TransaksiItem } from './entities/transaksi.entity.js';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { Produk } from '../produk/entities/produk.entity.js';
-import { CreateTransaksiDto } from './dto/create-transaksi.dto.js';
 
-@Injectable()
-export class TransaksiService {
-  constructor(
-    @InjectRepository(Transaksi)
-    private transaksiRepository: Repository<Transaksi>,
-    @InjectRepository(TransaksiItem)
-    private itemRepository: Repository<TransaksiItem>,
-    @InjectRepository(Produk)
-    private produkRepository: Repository<Produk>,
-  ) {}
+@Entity()
+export class Transaksi {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  async create(createTransaksiDto: CreateTransaksiDto) {
-    const items: TransaksiItem[] = [];
-    let total = 0;
+  @Column({ nullable: true, unique: true })
+  kodeTransaksi: string | null;
 
-    for (const itemDto of createTransaksiDto.items) {
-      const produk = await this.produkRepository.findOneBy({
-        id: itemDto.produkId,
-      });
+  @Column('decimal')
+  total: number;
 
-      if (!produk) {
-        throw new BadRequestException(
-          'Produk dengan id ' + itemDto.produkId + ' tidak ditemukan',
-        );
-      }
+  @Column({ default: 'selesai' })
+  status: string;
 
-      if (produk.stok < itemDto.jumlah) {
-        throw new BadRequestException(
-          'Stok ' + produk.nama + ' tidak cukup (sisa ' + produk.stok + ')',
-        );
-      }
+  @Column({ nullable: true })
+  customerEmail: string | null;
 
-      const subtotal = Number(produk.harga) * itemDto.jumlah;
-      total += subtotal;
+  @Column({ nullable: true })
+  alamatPengiriman: string | null;
 
-      const item = this.itemRepository.create({
-        produk,
-        jumlah: itemDto.jumlah,
-        hargaSatuan: produk.harga,
-        subtotal,
-      });
-      items.push(item);
+  @Column({ nullable: true })
+  metodePembayaran: string | null;
 
-      produk.stok -= itemDto.jumlah;
-      await this.produkRepository.save(produk);
-    }
+  @CreateDateColumn()
+  createdAt: Date;
 
-    const transaksi = this.transaksiRepository.create({
-      total,
-      items,
-    });
+  @OneToMany(() => TransaksiItem, (item) => item.transaksi, {
+    cascade: true,
+  })
+  items: TransaksiItem[];
+}
 
-    return this.transaksiRepository.save(transaksi);
-  }
+@Entity()
+export class TransaksiItem {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  findAll() {
-    return this.transaksiRepository.find({
-      relations: { items: { produk: true } },
-    });
-  }
+  @ManyToOne(() => Transaksi, (transaksi) => transaksi.items, {
+    onDelete: 'CASCADE',
+  })
+  transaksi: Transaksi;
 
-  findOne(id: number) {
-    return this.transaksiRepository.findOne({
-      where: { id },
-      relations: { items: { produk: true } },
-    });
-  }
+  @ManyToOne(() => Produk, { onDelete: 'CASCADE' })
+  produk: Produk;
 
-  remove(id: number) {
-    return this.transaksiRepository.delete(id);
-  }
+  @Column()
+  jumlah: number;
+
+  @Column('decimal')
+  hargaSatuan: number;
+
+  @Column('decimal')
+  subtotal: number;
 }

@@ -13,8 +13,23 @@ export class Transaksi {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true, unique: true })
+  kodeTransaksi: string;
+
   @Column('decimal')
   total: number;
+
+  @Column({ default: 'selesai' })
+  status: string;
+
+  @Column({ nullable: true })
+  customerEmail: string;
+
+  @Column({ nullable: true })
+  alamatPengiriman: string;
+
+  @Column({ nullable: true })
+  metodePembayaran: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 export function defaultRouteForRole(role: string | null) {
   if (role === "kasir") return "/kasir";
+  if (role === "customer") return "/akun";
   return "/";
 }
 

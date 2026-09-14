@@ -19,6 +19,9 @@ const allMenu = [
   { href: "/kategori", label: "Kategori", icon: "🏷️", roles: ["admin", "gudang"] },
   { href: "/kasir", label: "Kasir", icon: "🧾", roles: ["admin", "kasir"] },
   { href: "/riwayat", label: "Riwayat Transaksi", icon: "📊", roles: ["admin", "kasir"] },
+  { href: "/customer", label: "Customer", icon: "🧑‍🤝‍🧑", roles: ["admin"] },
+  { href: "/user", label: "Kelola User", icon: "👤", roles: ["admin"] },
+  { href: "/role", label: "Kelola Role", icon: "🔑", roles: ["admin"] },
 ];
 
 export default function AppSidebar() {

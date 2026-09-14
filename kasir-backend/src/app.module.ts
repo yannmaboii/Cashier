@@ -7,6 +7,8 @@ import { KategoriModule } from './kategori/kategori.module.js';
 import { UserModule } from './user/user.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { TransaksiModule } from './transaksi/transaksi.module.js';
+import { RoleModule } from './role/role.module.js';
+import { CustomerModule } from './customer/customer.module.js';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { TransaksiModule } from './transaksi/transaksi.module.js';
     UserModule,
     AuthModule,
     TransaksiModule,
+    RoleModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

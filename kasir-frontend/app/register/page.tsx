@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,28 +16,24 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/auth/login", {
+      const res = await fetch("http://localhost:3000/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
-        throw new Error("Email atau password salah");
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message || "Gagal mendaftar");
       }
 
       const data = await res.json();
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("email", data.user.email);
-
-      if (data.user.role === "customer") {
-        router.push("/akun");
-      } else {
-        router.push("/");
-      }
-    } catch (err) {
-      setError("Email atau password salah");
+      router.push("/akun");
+    } catch (err: any) {
+      setError(err.message || "Gagal mendaftar, coba lagi");
     } finally {
       setLoading(false);
     }
@@ -48,13 +44,13 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-yellow-300 shadow-lg shadow-yellow-200 mb-4">
-            <span className="text-4xl">🧾</span>
+            <span className="text-4xl">🙋</span>
           </div>
           <h1 className="text-3xl font-bold text-neutral-800">
-            Kasir Admin
+            Daftar Akun
           </h1>
           <p className="text-neutral-500 text-sm mt-1">
-            Yuk masuk dulu buat mulai kerja~
+            Buat akun pelanggan baru
           </p>
         </div>
 
@@ -71,7 +67,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="admin@kasir.com"
+              placeholder="kamu@email.com"
               className="w-full px-4 py-3 rounded-full border-2 border-neutral-200 bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-4 focus:ring-yellow-200 focus:border-yellow-300 transition-all"
             />
           </div>
@@ -101,13 +97,13 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-yellow-300 hover:bg-yellow-400 active:scale-95 text-neutral-900 font-bold py-3 rounded-full shadow-md shadow-yellow-200 transition-all disabled:opacity-60"
           >
-            {loading ? "Memproses..." : "Masuk 🚀"}
+            {loading ? "Memproses..." : "Daftar 🎉"}
           </button>
 
           <p className="text-center text-sm text-neutral-500 mt-4">
-            Pelanggan baru?{" "}
-            <a href="/register" className="text-yellow-600 font-semibold">
-              Daftar di sini
+            Sudah punya akun?{" "}
+            <a href="/login" className="text-yellow-600 font-semibold">
+              Masuk di sini
             </a>
           </p>
         </form>
