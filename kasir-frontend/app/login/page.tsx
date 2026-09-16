@@ -30,6 +30,7 @@ export default function LoginPage() {
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("email", data.user.email);
+      localStorage.setItem("username", data.user.username || "");
 
       if (data.user.role === "customer") {
         router.push("/akun");

@@ -5,8 +5,6 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import AppSidebar from "./AppSidebar";
 import Topbar from "./Topbar";
 
-const noShellRoutes = ["/login", "/register", "/akun"];
-
 export default function ShellWrapper({
   children,
 }: {
@@ -14,7 +12,12 @@ export default function ShellWrapper({
 }) {
   const pathname = usePathname();
 
-  if (noShellRoutes.includes(pathname)) {
+  const noShell =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname.startsWith("/akun");
+
+  if (noShell) {
     return <>{children}</>;
   }
 

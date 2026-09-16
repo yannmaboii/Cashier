@@ -16,4 +16,7 @@ export class Produk {
 
   @Column({ nullable: true })
   kategori: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  foto: string | null;
 }

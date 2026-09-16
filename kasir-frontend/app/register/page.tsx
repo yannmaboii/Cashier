@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,7 +20,7 @@ export default function RegisterPage() {
       const res = await fetch("http://localhost:3000/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, username, password }),
       });
 
       if (!res.ok) {
@@ -31,6 +32,7 @@ export default function RegisterPage() {
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("email", data.user.email);
+      localStorage.setItem("username", data.user.username || "");
       router.push("/akun");
     } catch (err: any) {
       setError(err.message || "Gagal mendaftar, coba lagi");
@@ -58,6 +60,20 @@ export default function RegisterPage() {
           onSubmit={handleSubmit}
           className="bg-white border-2 border-yellow-100 rounded-[2rem] p-7 shadow-xl shadow-yellow-100/50"
         >
+          <div className="mb-4">
+            <label className="block text-sm font-semibold text-neutral-600 mb-1.5">
+              Username
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              placeholder="nama_kamu"
+              className="w-full px-4 py-3 rounded-full border-2 border-neutral-200 bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-4 focus:ring-yellow-200 focus:border-yellow-300 transition-all"
+            />
+          </div>
+
           <div className="mb-4">
             <label className="block text-sm font-semibold text-neutral-600 mb-1.5">
               Email

@@ -51,7 +51,7 @@ export default function UserPage() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold text-neutral-900">
-          Kelola User
+          Kelola Staff
         </h1>
         <a
           href="/user/tambah"

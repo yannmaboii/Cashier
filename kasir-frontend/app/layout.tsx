@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Quicksand } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import MoneyCursor from "./components/MoneyCursor";
 import ShellWrapper from "./components/ShellWrapper";
 
-const quicksand = Quicksand({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -22,12 +22,8 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body
-        className={quicksand.className}
-        style={{
-          backgroundImage: "url('/kasir-pattern.svg')",
-          backgroundRepeat: "repeat",
-          backgroundColor: "#FFFDF5",
-        }}
+        className={jakarta.className}
+        style={{ backgroundColor: "#F8F4EE" }}
       >
         <MoneyCursor />
         <ShellWrapper>{children}</ShellWrapper>

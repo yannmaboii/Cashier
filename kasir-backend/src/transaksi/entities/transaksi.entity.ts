@@ -13,8 +13,8 @@ export class Transaksi {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true, unique: true })
-  kodeTransaksi: string;
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  kodeTransaksi: string | null;
 
   @Column('decimal')
   total: number;
@@ -22,14 +22,20 @@ export class Transaksi {
   @Column({ default: 'selesai' })
   status: string;
 
-  @Column({ nullable: true })
-  customerEmail: string;
+  @Column({ type: 'varchar', nullable: true })
+  customerEmail: string | null;
 
-  @Column({ nullable: true })
-  alamatPengiriman: string;
+  @Column({ type: 'varchar', nullable: true })
+  alamatPengiriman: string | null;
 
-  @Column({ nullable: true })
-  metodePembayaran: string;
+  @Column({ type: 'varchar', nullable: true })
+  metodePembayaran: string | null;
+
+  @Column({ type: 'decimal', nullable: true })
+  ongkosKirim: number | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  kurir: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

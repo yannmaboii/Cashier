@@ -9,17 +9,46 @@ type TransaksiItem = {
   jumlah: number;
   hargaSatuan: number;
   subtotal: number;
-  produk: {
-    id: number;
-    nama: string;
-  };
+  produk: { id: number; nama: string };
 };
 
 type Transaksi = {
   id: number;
+  kodeTransaksi: string;
   total: number;
+  status: string;
+  customerEmail: string | null;
+  alamatPengiriman: string | null;
+  metodePembayaran: string | null;
   createdAt: string;
   items: TransaksiItem[];
+};
+
+const statusList = [
+  "menunggu_pembayaran",
+  "dibayar",
+  "diproses",
+  "dikirim",
+  "selesai",
+  "dibatalkan",
+];
+
+const statusLabel: Record<string, string> = {
+  menunggu_pembayaran: "Menunggu Bayar",
+  dibayar: "Dibayar",
+  diproses: "Diproses",
+  dikirim: "Dikirim",
+  selesai: "Selesai",
+  dibatalkan: "Dibatalkan",
+};
+
+const statusColor: Record<string, string> = {
+  menunggu_pembayaran: "bg-red-50 text-red-600",
+  dibayar: "bg-blue-50 text-blue-600",
+  diproses: "bg-amber-50 text-amber-600",
+  dikirim: "bg-purple-50 text-purple-600",
+  selesai: "bg-green-50 text-green-700",
+  dibatalkan: "bg-neutral-100 text-neutral-500",
 };
 
 export default function RiwayatPage() {
@@ -34,11 +63,7 @@ export default function RiwayatPage() {
     authFetch("/transaksi")
       .then((res) => res.json())
       .then((data) => {
-        const sorted = [...data].sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
-        setTransaksi(sorted);
+        setTransaksi(data);
         setLoading(false);
       })
       .catch(() => {
@@ -58,10 +83,23 @@ export default function RiwayatPage() {
 
     try {
       const res = await authFetch(`/transaksi/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Gagal menghapus transaksi");
+      if (!res.ok) throw new Error();
       loadTransaksi();
-    } catch (err) {
+    } catch {
       alert("Gagal menghapus transaksi, coba lagi");
+    }
+  };
+
+  const handleStatusChange = async (id: number, status: string) => {
+    try {
+      const res = await authFetch(`/transaksi/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error();
+      loadTransaksi();
+    } catch {
+      alert("Gagal update status, coba lagi");
     }
   };
 
@@ -117,19 +155,48 @@ export default function RiwayatPage() {
               key={t.id}
               className="bg-white border border-neutral-200 rounded-xl overflow-hidden shadow-sm"
             >
-              <div className="flex items-center justify-between bg-yellow-50 px-4 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 bg-yellow-50 px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-neutral-900">
-                    Transaksi #{t.id}
-                  </p>
-                  <p className="text-xs text-neutral-500">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-mono font-medium text-neutral-900">
+                      {t.kodeTransaksi || `#${t.id}`}
+                    </p>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${
+                        t.customerEmail
+                          ? "bg-purple-50 text-purple-600"
+                          : "bg-neutral-100 text-neutral-600"
+                      }`}
+                    >
+                      {t.customerEmail ? "Pesanan Online" : "Kasir (Offline)"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-neutral-500 mt-0.5">
                     {formatTanggal(t.createdAt)}
+                    {t.customerEmail ? ` · ${t.customerEmail}` : ""}
                   </p>
+                  {t.alamatPengiriman && (
+                    <p className="text-xs text-neutral-400 mt-0.5">
+                      📍 {t.alamatPengiriman}
+                    </p>
+                  )}
                 </div>
-                <div className="flex items-center gap-3">
+
+                <div className="flex items-center gap-2">
                   <p className="text-base font-semibold text-neutral-900">
                     Rp {Number(t.total).toLocaleString("id-ID")}
                   </p>
+                  <select
+                    value={t.status}
+                    onChange={(e) => handleStatusChange(t.id, e.target.value)}
+                    className={`text-xs px-2 py-1.5 rounded-full border-none font-medium ${statusColor[t.status] || "bg-neutral-100"}`}
+                  >
+                    {statusList.map((s) => (
+                      <option key={s} value={s}>
+                        {statusLabel[s]}
+                      </option>
+                    ))}
+                  </select>
                   {role === "admin" && (
                     <button
                       onClick={() => handleDelete(t.id)}

@@ -10,6 +10,7 @@ type Produk = {
   harga: number;
   stok: number;
   kategori: string;
+  foto: string | null;
 };
 
 export default function Home() {
@@ -25,10 +26,7 @@ export default function Home() {
         setProduk(data);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Gagal fetch produk:", err);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -41,15 +39,15 @@ export default function Home() {
 
     try {
       const res = await authFetch(`/produk/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Gagal menghapus produk");
+      if (!res.ok) throw new Error();
       loadProduk();
-    } catch (err) {
+    } catch {
       alert("Gagal menghapus produk, coba lagi");
     }
   };
 
   if (loading) {
-    return <p className="text-neutral-400">Loading...</p>;
+    return <p className="text-slate-400">Loading...</p>;
   }
 
   const totalStok = produk.reduce((sum, p) => sum + Number(p.stok), 0);
@@ -59,94 +57,151 @@ export default function Home() {
   );
 
   return (
-    <div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4">
-          <p className="text-xs text-neutral-500">Jumlah Produk</p>
-          <p className="text-2xl font-semibold text-neutral-900 mt-1">
+    <div className="space-y-6">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="clay-card-yellow rounded-3xl p-6 transition-transform duration-200 hover:-translate-y-1">
+          <div className="flex justify-between items-start mb-3">
+            <span className="text-xs font-bold text-amber-800 tracking-wide uppercase">
+              Jumlah Produk
+            </span>
+            <span className="w-8 h-8 rounded-xl bg-amber-200/50 flex items-center justify-center text-sm shadow-inner">
+              📦
+            </span>
+          </div>
+          <div className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
             {produk.length}
+          </div>
+          <p className="text-xs text-amber-700/80 font-medium mt-2">
+            Item terdaftar aktif
           </p>
         </div>
-        <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4">
-          <p className="text-xs text-neutral-500">Total Stok</p>
-          <p className="text-2xl font-semibold text-neutral-900 mt-1">
+
+        <div className="clay-surface rounded-3xl p-6 transition-transform duration-200 hover:-translate-y-1">
+          <div className="flex justify-between items-start mb-3">
+            <span className="text-xs font-bold text-slate-500 tracking-wide uppercase">
+              Total Stok
+            </span>
+            <span className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-sm shadow-inner">
+              📈
+            </span>
+          </div>
+          <div className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
             {totalStok}
+          </div>
+          <p className="text-xs text-slate-400 font-medium mt-2">
+            Unit siap dipasarkan
           </p>
         </div>
-        <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4">
-          <p className="text-xs text-neutral-500">Estimasi Nilai Stok</p>
-          <p className="text-2xl font-semibold text-neutral-900 mt-1">
+
+        <div className="clay-surface rounded-3xl p-6 transition-transform duration-200 hover:-translate-y-1">
+          <div className="flex justify-between items-start mb-3">
+            <span className="text-xs font-bold text-slate-500 tracking-wide uppercase">
+              Estimasi Nilai Stok
+            </span>
+            <span className="w-8 h-8 rounded-xl bg-amber-100/60 flex items-center justify-center text-sm shadow-inner">
+              💵
+            </span>
+          </div>
+          <div className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
             Rp {totalNilai.toLocaleString("id-ID")}
+          </div>
+          <p className="text-xs text-emerald-600 font-semibold mt-2">
+            Perhitungan inventaris realtime
           </p>
         </div>
-      </div>
+      </section>
 
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-semibold text-neutral-900">
-          Daftar Produk
-        </h1>
-        <a
-          href="/produk/tambah"
-          className="text-sm bg-yellow-400 hover:bg-yellow-500 text-neutral-900 font-medium rounded-lg px-4 py-2"
-        >
-          + Tambah Produk
-        </a>
-      </div>
+      <section className="space-y-4">
+        <div className="flex items-center justify-between pt-2">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+              Daftar Produk
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Kelola data inventaris, penyesuaian harga, dan stok kasir.
+            </p>
+          </div>
+          <a
+            href="/produk/tambah"
+            className="clay-btn-gold text-white font-bold text-sm px-6 py-3.5 rounded-2xl flex items-center gap-2 tracking-wide"
+          >
+            <span>+</span>
+            <span>Tambah Produk</span>
+          </a>
+        </div>
 
-      <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden shadow-sm">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-neutral-50 text-neutral-500">
-              <th className="text-left font-medium px-4 py-3">Nama</th>
-              <th className="text-left font-medium px-4 py-3">Harga</th>
-              <th className="text-left font-medium px-4 py-3">Stok</th>
-              <th className="text-left font-medium px-4 py-3">Kategori</th>
-              <th className="text-left font-medium px-4 py-3">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {produk.map((p) => (
-              <tr key={p.id} className="border-t border-neutral-100">
-                <td className="px-4 py-3 text-neutral-800 font-medium">
-                  {p.nama}
-                </td>
-                <td className="px-4 py-3 text-neutral-700">
-                  Rp {Number(p.harga).toLocaleString("id-ID")}
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={
-                      "text-xs px-2 py-1 rounded-full " +
-                      (Number(p.stok) < 5
-                        ? "bg-red-50 text-red-600"
-                        : "bg-green-50 text-green-700")
-                    }
+        <div className="clay-surface rounded-3xl overflow-hidden p-3 md:p-6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-separate border-spacing-y-2">
+              <thead>
+                <tr className="text-slate-500 text-xs font-bold uppercase tracking-wider">
+                  <th className="py-3 px-5">Produk</th>
+                  <th className="py-3 px-5">Harga</th>
+                  <th className="py-3 px-5 text-center">Stok</th>
+                  <th className="py-3 px-5">Kategori</th>
+                  <th className="py-3 px-5 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm font-medium text-slate-700">
+                {produk.map((p) => (
+                  <tr
+                    key={p.id}
+                    className="group hover:bg-amber-50/40 rounded-2xl transition-colors"
                   >
-                    {p.stok}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-neutral-500">{p.kategori}</td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
-                    <a
-                      href={`/produk/edit/${p.id}`}
-                      className="text-xs text-neutral-700 hover:text-neutral-900 border border-neutral-300 rounded-lg px-3 py-1.5"
-                    >
-                      Edit
-                    </a>
-                    <button
-                      onClick={() => handleDelete(p.id, p.nama)}
-                      className="text-xs text-red-600 hover:text-red-700 border border-red-200 rounded-lg px-3 py-1.5"
-                    >
-                      Hapus
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                    <td className="py-4 px-5 rounded-l-2xl">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center shrink-0">
+                          {p.foto ? (
+                            <img
+                              src={`http://localhost:3000${p.foto}`}
+                              alt={p.nama}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-lg">📦</span>
+                          )}
+                        </div>
+                        <span className="font-semibold text-slate-900">
+                          {p.nama}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-5 font-semibold text-slate-800">
+                      Rp {Number(p.harga).toLocaleString("id-ID")}
+                    </td>
+                    <td className="py-4 px-5 text-center">
+                      <span className="clay-badge-mint font-bold px-3.5 py-1 rounded-full text-xs inline-block">
+                        {p.stok}
+                      </span>
+                    </td>
+                    <td className="py-4 px-5">
+                      <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700">
+                        {p.kategori}
+                      </span>
+                    </td>
+                    <td className="py-4 px-5 rounded-r-2xl text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <a
+                          href={`/produk/edit/${p.id}`}
+                          className="clay-pill-btn px-4 py-1.5 rounded-xl text-xs font-bold text-slate-700 border border-slate-200 hover:text-amber-700"
+                        >
+                          Edit
+                        </a>
+                        <button
+                          onClick={() => handleDelete(p.id, p.nama)}
+                          className="clay-pill-red px-4 py-1.5 rounded-xl text-xs font-bold"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

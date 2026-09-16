@@ -29,6 +29,10 @@ export class ProdukService {
     return this.produkRepository.update(id, updateProdukDto);
   }
 
+  updateFoto(id: number, fotoPath: string) {
+    return this.produkRepository.update(id, { foto: fotoPath });
+  }
+
   remove(id: number) {
     return this.produkRepository.delete(id);
   }

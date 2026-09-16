@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
@@ -24,6 +24,10 @@ export class UserService {
 
   findAll() {
     return this.userRepository.find();
+  }
+
+  findAllStaff() {
+    return this.userRepository.find({ where: { role: Not('customer') } });
   }
 
   findOne(id: number) {

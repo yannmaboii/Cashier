@@ -10,6 +10,7 @@ type Produk = {
   harga: number;
   stok: number;
   kategori: string;
+  foto: string | null;
 };
 
 type CartItem = {
@@ -29,23 +30,15 @@ export default function KasirPage() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [pencarian, setPencarian] = useState("");
-  const [uangDiterima, setUangDiterima] = useState("");
 
   const loadProduk = () => {
     fetch("http://localhost:3000/produk")
-      .then((res) => {
-        if (!res.ok) throw new Error("Gagal memuat produk");
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data) => {
-        setProduk(Array.isArray(data) ? data : []);
+        setProduk(data);
         setLoading(false);
       })
-      .catch(() => {
-        setError("Gagal memuat produk");
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -106,30 +99,9 @@ export default function KasirPage() {
   };
 
   const total = cart.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
-  const kataKunci = pencarian.trim().toLowerCase();
-  const produkTampil = produk.filter((p) => {
-    if (!kataKunci) return true;
-    return (
-      p.nama.toLowerCase().includes(kataKunci) ||
-      String(p.kategori).toLowerCase().includes(kataKunci)
-    );
-  });
-  const diterima = Number(uangDiterima);
-  const uangValid = Number.isFinite(diterima) && diterima > 0;
-  const kembalian = uangValid ? diterima - total : 0;
-  const uangCukup = uangValid && diterima >= total;
-  const saranUang = Array.from(
-    new Set(
-      [total, 20000, 50000, 100000].filter((nominal) => nominal >= total),
-    ),
-  ).slice(0, 4);
 
   const handleProses = async () => {
     if (cart.length === 0) return;
-    if (!uangCukup) {
-      setError("Uang diterima masih kurang dari total");
-      return;
-    }
     setError("");
     setSuccess("");
     setProcessing(true);
@@ -151,7 +123,6 @@ export default function KasirPage() {
       }
 
       setCart([]);
-      setUangDiterima("");
       setSuccess("Transaksi berhasil diproses!");
       loadProduk();
     } catch (err: any) {
@@ -162,12 +133,12 @@ export default function KasirPage() {
   };
 
   if (loading) {
-    return <p className="text-neutral-400">Loading...</p>;
+    return <p className="text-slate-400">Loading...</p>;
   }
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-neutral-900 mb-4">Kasir</h1>
+      <h1 className="text-xl font-bold text-slate-900 mb-4">Kasir</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
@@ -177,13 +148,26 @@ export default function KasirPage() {
                 key={p.id}
                 onClick={() => tambahKeCart(p)}
                 disabled={p.stok < 1}
-                className="text-left bg-white border border-neutral-200 rounded-xl p-4 shadow-sm hover:border-yellow-400 hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                className="clay-pill-btn text-left rounded-2xl p-3 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <p className="font-medium text-neutral-900">{p.nama}</p>
-                <p className="text-sm text-neutral-500 mt-1">
+                <div className="w-full aspect-square rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center mb-2">
+                  {p.foto ? (
+                    <img
+                      src={`http://localhost:3000${p.foto}`}
+                      alt={p.nama}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-3xl">📦</span>
+                  )}
+                </div>
+                <p className="font-semibold text-slate-900 text-sm">
+                  {p.nama}
+                </p>
+                <p className="text-xs text-slate-500 mt-0.5">
                   Rp {Number(p.harga).toLocaleString("id-ID")}
                 </p>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-[10px] text-slate-400 mt-0.5">
                   Stok: {p.stok}
                 </p>
               </button>
@@ -191,11 +175,11 @@ export default function KasirPage() {
           </div>
         </div>
 
-        <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-5 h-fit sticky top-4 shadow-sm">
-          <h2 className="font-semibold text-neutral-900 mb-4">Keranjang</h2>
+        <div className="clay-surface rounded-3xl p-5 h-fit sticky top-4">
+          <h2 className="font-bold text-slate-900 mb-4">Keranjang</h2>
 
           {cart.length === 0 ? (
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-slate-400">
               Belum ada produk dipilih
             </p>
           ) : (
@@ -206,17 +190,17 @@ export default function KasirPage() {
                   className="flex items-center justify-between gap-2"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-neutral-900 truncate">
+                    <p className="text-sm font-medium text-slate-900 truncate">
                       {item.nama}
                     </p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-slate-500">
                       Rp {item.harga.toLocaleString("id-ID")}
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => ubahJumlah(item.produkId, -1)}
-                      className="w-6 h-6 flex items-center justify-center rounded-md border border-neutral-300 text-neutral-600 hover:bg-neutral-100"
+                      className="w-6 h-6 flex items-center justify-center rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100"
                     >
                       −
                     </button>
@@ -225,7 +209,7 @@ export default function KasirPage() {
                     </span>
                     <button
                       onClick={() => ubahJumlah(item.produkId, 1)}
-                      className="w-6 h-6 flex items-center justify-center rounded-md border border-neutral-300 text-neutral-600 hover:bg-neutral-100"
+                      className="w-6 h-6 flex items-center justify-center rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100"
                     >
                       +
                     </button>
@@ -241,26 +225,26 @@ export default function KasirPage() {
             </div>
           )}
 
-          <div className="border-t border-neutral-200 pt-3 mb-4">
+          <div className="border-t border-slate-200 pt-3 mb-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-neutral-700">
+              <span className="text-sm font-medium text-slate-700">
                 Total
               </span>
-              <span className="text-lg font-semibold text-neutral-900">
+              <span className="text-lg font-bold text-slate-900">
                 Rp {total.toLocaleString("id-ID")}
               </span>
             </div>
           </div>
 
-          {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
+          {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
           {success && (
-            <p className="text-sm text-green-600 mb-3">{success}</p>
+            <p className="text-sm text-emerald-600 mb-3">{success}</p>
           )}
 
           <button
             onClick={handleProses}
             disabled={cart.length === 0 || processing}
-            className="w-full bg-yellow-400 hover:bg-yellow-500 text-neutral-900 font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="clay-btn-gold w-full text-white font-bold py-2.5 rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {processing ? "Memproses..." : "Proses Transaksi"}
           </button>
