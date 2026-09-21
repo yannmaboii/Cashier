@@ -87,6 +87,12 @@ export default function CustomerPage() {
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
                     <a
+                      href={`/customer/profil/${c.id}`}
+                      className="text-xs text-amber-700 hover:text-amber-800 border border-amber-200 rounded-lg px-3 py-1.5"
+                    >
+                      Lihat Profile
+                    </a>
+                    <a
                       href={`/customer/edit/${c.id}`}
                       className="text-xs text-neutral-700 hover:text-neutral-900 border border-neutral-300 rounded-lg px-3 py-1.5"
                     >

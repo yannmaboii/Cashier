@@ -20,6 +20,7 @@ type Transaksi = {
   customerEmail: string | null;
   alamatPengiriman: string | null;
   metodePembayaran: string | null;
+  kurir: string | null;
   createdAt: string;
   items: TransaksiItem[];
 };
@@ -101,6 +102,10 @@ export default function RiwayatPage() {
     } catch {
       alert("Gagal update status, coba lagi");
     }
+  };
+
+  const handleCetakResi = (id: number) => {
+    window.open(`/cetak-resi/${id}`, "_blank");
   };
 
   const formatTanggal = (iso: string) => {
@@ -197,6 +202,14 @@ export default function RiwayatPage() {
                       </option>
                     ))}
                   </select>
+                  {t.customerEmail && t.alamatPengiriman && (
+                    <button
+                      onClick={() => handleCetakResi(t.id)}
+                      className="text-xs text-neutral-700 hover:text-amber-700 border border-neutral-200 hover:border-amber-300 rounded-lg px-3 py-1.5 font-medium"
+                    >
+                      🖨️ Cetak Resi
+                    </button>
+                  )}
                   {role === "admin" && (
                     <button
                       onClick={() => handleDelete(t.id)}

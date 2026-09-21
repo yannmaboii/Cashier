@@ -6,12 +6,14 @@ import { Transaksi, TransaksiItem } from './entities/transaksi.entity.js';
 import { Produk } from '../produk/entities/produk.entity.js';
 import { AuthModule } from '../auth/auth.module.js';
 import { PembayaranModule } from '../pembayaran/pembayaran.module.js';
+import { SheetsModule } from '../sheets/sheets.module.js';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Transaksi, TransaksiItem, Produk]),
     AuthModule,
     forwardRef(() => PembayaranModule),
+    SheetsModule,
   ],
   controllers: [TransaksiController],
   providers: [TransaksiService],

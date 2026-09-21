@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 
 const allMenu = [
   { href: "/", label: "Produk", icon: "📦", roles: ["admin", "gudang"] },
   { href: "/kategori", label: "Kategori", icon: "🏷️", roles: ["admin", "gudang"] },
   { href: "/kasir", label: "Kasir", icon: "🧾", roles: ["admin", "kasir"] },
   { href: "/riwayat", label: "Riwayat Transaksi", icon: "📊", roles: ["admin", "kasir"] },
+  { href: "/rekap-dana", label: "Rekap Dana", icon: "💰", roles: ["admin"] },
   { href: "/customer", label: "Customer", icon: "🧑‍🤝‍🧑", roles: ["admin"] },
   { href: "/user", label: "Kelola Staff", icon: "👤", roles: ["admin"] },
   { href: "/role", label: "Kelola Role", icon: "🔑", roles: ["admin"] },
@@ -25,19 +27,16 @@ export default function AppSidebar() {
   const menu = allMenu.filter((item) => !role || item.roles.includes(role));
 
   return (
-    <aside className="w-72 p-6 flex flex-col shrink-0 min-h-screen hidden md:flex">
+    <aside className="w-72 p-6 flex flex-col shrink-0 h-screen sticky top-0 overflow-y-auto hidden md:flex">
       <div className="flex items-center gap-3.5 px-3 py-2 mb-8">
-        <div className="w-12 h-12 rounded-2xl clay-card-yellow flex items-center justify-center text-2xl -rotate-2">
-          💰
-        </div>
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 leading-tight">
-            Kasir Admin
-          </h1>
-          <p className="text-xs font-medium text-amber-700/70">
-            Point of Sales
-          </p>
-        </div>
+        <Image
+          src="/logo-fleur.png"
+          alt="Fleur Imperium"
+          width={200}
+          height={80}
+          className="w-full h-auto"
+          priority
+        />
       </div>
 
       <div className="px-4 mb-3">

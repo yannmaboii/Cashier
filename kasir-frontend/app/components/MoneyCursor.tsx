@@ -20,7 +20,7 @@ export default function MoneyCursor() {
   const lastSpawn = useRef(0);
 
   useEffect(() => {
-    const emojis = ["💵", "🪙", "💴"];
+    const emojis = ["🌸", "🌺", "🌼", "💮", "🌷"];
 
     const handleMove = (e: MouseEvent) => {
       setCursorPos({ x: e.clientX, y: e.clientY });
@@ -29,14 +29,19 @@ export default function MoneyCursor() {
       if (now - lastSpawn.current < 80) return;
       lastSpawn.current = now;
 
+      const randomDx = Math.random() * 60 - 30;
+      const randomDuration = 700 + Math.random() * 400;
+      const randomSize = 14 + Math.random() * 10;
+      const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+
       const newParticle: Particle = {
         id: particleId++,
         x: e.clientX,
         y: e.clientY,
-        emoji: emojis[Math.floor(Math.random() * emojis.length)],
-        dx: Math.random() * 60 - 30,
-        duration: 700 + Math.random() * 400,
-        size: 14 + Math.random() * 10,
+        emoji: randomEmoji,
+        dx: randomDx,
+        duration: randomDuration,
+        size: randomSize,
       };
 
       setParticles((prev) => [...prev, newParticle]);
@@ -59,19 +64,18 @@ export default function MoneyCursor() {
           cursor: none !important;
         }
 
-        @keyframes moneyFall {
+        @keyframes flowerFall {
           0% {
             transform: translate(0, 0) rotate(0deg);
             opacity: 1;
           }
           100% {
-            transform: translate(var(--dx), 70px) rotate(45deg);
+            transform: translate(var(--dx), 70px) rotate(120deg);
             opacity: 0;
           }
         }
       `}</style>
 
-      {/* Cursor custom */}
       <div
         style={{
           position: "fixed",
@@ -83,10 +87,9 @@ export default function MoneyCursor() {
           fontSize: 22,
         }}
       >
-        💰
+        🌸
       </div>
 
-      {/* Partikel uang jatuh */}
       {particles.map((p) => (
         <div
           key={p.id}
@@ -99,7 +102,7 @@ export default function MoneyCursor() {
               zIndex: 9998,
               fontSize: p.size,
               "--dx": `${p.dx}px`,
-              animation: `moneyFall ${p.duration}ms ease-in forwards`,
+              animation: `flowerFall ${p.duration}ms ease-in forwards`,
             } as React.CSSProperties
           }
         >

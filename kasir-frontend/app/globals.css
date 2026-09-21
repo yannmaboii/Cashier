@@ -49,38 +49,40 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --font-heading-serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+
+  --background: #faf8f3;
+  --foreground: #2b2b26;
+  --card: #ffffff;
+  --card-foreground: #2b2b26;
+  --popover: #ffffff;
+  --popover-foreground: #2b2b26;
+  --primary: #4a5d45;
+  --primary-foreground: #faf8f3;
+  --secondary: #e8ece3;
+  --secondary-foreground: #2b2b26;
+  --muted: #f3efe6;
+  --muted-foreground: #6b6b60;
+  --accent: #e8ece3;
+  --accent-foreground: #2b2b26;
+  --destructive: #a2461f;
+  --border: #e2ded2;
+  --input: #e2ded2;
+  --ring: #7a8b6f;
+  --chart-1: #4a5d45;
+  --chart-2: #7a8b6f;
+  --chart-3: #a8b89f;
+  --chart-4: #c9d4c1;
+  --chart-5: #e8ece3;
+  --radius: 0.75rem;
+  --sidebar: #fdfcf9;
+  --sidebar-foreground: #2b2b26;
+  --sidebar-primary: #4a5d45;
+  --sidebar-primary-foreground: #faf8f3;
+  --sidebar-accent: #e8ece3;
+  --sidebar-accent-foreground: #2b2b26;
+  --sidebar-border: #e2ded2;
+  --sidebar-ring: #7a8b6f;
 }
 
 .dark {
@@ -127,106 +129,85 @@
   html {
     @apply font-sans;
   }
+  h1,
+  h2 {
+    font-family: var(--font-heading-serif);
+    letter-spacing: -0.01em;
+  }
 }
 
-/* ===== Claymorphism Design System ===== */
+/* ===== Botanical Editorial Minimal Design System ===== */
 
 .clay-surface {
   background: #ffffff;
+  border: 1px solid #e2ded2;
   box-shadow:
-    10px 14px 28px -6px rgba(180, 150, 110, 0.16),
-    -6px -6px 16px 0px rgba(255, 255, 255, 0.95),
-    inset 2px 2px 4px 0px rgba(255, 255, 255, 0.9),
-    inset -3px -3px 6px 0px rgba(180, 150, 110, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+    0 1px 2px rgba(43, 43, 38, 0.03),
+    0 16px 32px -20px rgba(74, 93, 69, 0.14);
 }
 
 .clay-card-yellow {
-  background: linear-gradient(135deg, #fef7e8 0%, #fef0d2 100%);
+  background: linear-gradient(160deg, #f3efe6 0%, #e8ece3 100%);
+  border: 1px solid #dce3d5;
   box-shadow:
-    10px 14px 24px -6px rgba(245, 158, 11, 0.2),
-    -6px -6px 14px 0px rgba(255, 255, 255, 0.9),
-    inset 3px 3px 6px 0px rgba(255, 255, 255, 0.8),
-    inset -3px -3px 6px 0px rgba(217, 119, 6, 0.12);
-  border: 1px solid rgba(254, 240, 210, 0.9);
+    0 1px 2px rgba(43, 43, 38, 0.03),
+    0 18px 34px -20px rgba(74, 93, 69, 0.2);
 }
 
 .clay-btn-gold {
-  background: linear-gradient(145deg, #fbbf24, #f59e0b);
-  box-shadow:
-    0px 8px 18px -2px rgba(245, 158, 11, 0.42),
-    inset 2px 3px 4px rgba(255, 255, 255, 0.6),
-    inset -2px -3px 5px rgba(180, 83, 9, 0.35);
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #4a5d45;
+  color: #faf8f3;
+  box-shadow: 0 8px 18px -8px rgba(74, 93, 69, 0.5);
+  transition: all 0.2s ease;
 }
 .clay-btn-gold:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0px 12px 22px -2px rgba(245, 158, 11, 0.5),
-    inset 2px 3px 5px rgba(255, 255, 255, 0.7),
-    inset -2px -3px 5px rgba(180, 83, 9, 0.4);
+  background: #3e4f3a;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px -8px rgba(74, 93, 69, 0.55);
 }
 .clay-btn-gold:active {
-  transform: translateY(1px);
-  box-shadow:
-    0px 4px 8px -2px rgba(245, 158, 11, 0.35),
-    inset 3px 3px 6px rgba(180, 83, 9, 0.45);
+  transform: translateY(0);
+  box-shadow: 0 4px 10px -6px rgba(74, 93, 69, 0.4);
 }
 
 .clay-pill-btn {
   background: #ffffff;
-  box-shadow:
-    3px 4px 8px rgba(180, 150, 110, 0.12),
-    -3px -3px 6px rgba(255, 255, 255, 0.9),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.8),
-    inset -1px -1px 3px rgba(180, 150, 110, 0.08);
-  transition: all 0.18s ease-in-out;
+  border: 1px solid #e2ded2;
+  color: #2b2b26;
+  transition: all 0.18s ease;
 }
 .clay-pill-btn:hover {
-  transform: translateY(-1.5px);
-  box-shadow:
-    4px 6px 12px rgba(180, 150, 110, 0.18),
-    -3px -3px 6px rgba(255, 255, 255, 0.9);
+  background: #f3efe6;
+  border-color: #c9d4c1;
+  transform: translateY(-1px);
 }
 .clay-pill-btn:active {
-  transform: translateY(1px);
-  box-shadow: inset 2px 2px 4px rgba(180, 150, 110, 0.2);
+  transform: translateY(0);
 }
 
 .clay-pill-red {
-  background: #fff5f5;
-  color: #e11d48;
-  border: 1px solid #ffe4e6;
-  box-shadow:
-    3px 4px 8px rgba(225, 29, 72, 0.08),
-    -2px -2px 6px rgba(255, 255, 255, 0.85),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.8),
-    inset -1px -1px 3px rgba(225, 29, 72, 0.1);
-  transition: all 0.18s ease-in-out;
+  background: #fbf2ec;
+  color: #a2461f;
+  border: 1px solid #f0ddcb;
+  box-shadow: none;
+  transition: all 0.18s ease;
 }
 .clay-pill-red:hover {
-  background: #ffe4e6;
-  color: #be123c;
-  transform: translateY(-1.5px);
-  box-shadow: 4px 6px 12px rgba(225, 29, 72, 0.15);
+  background: #f5e4d6;
+  color: #823414;
+  transform: translateY(-1px);
 }
 
 .clay-nav-active {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  box-shadow:
-    4px 6px 14px rgba(245, 158, 11, 0.18),
-    -3px -3px 8px rgba(255, 255, 255, 0.85),
-    inset 2px 2px 3px rgba(255, 255, 255, 0.7),
-    inset -2px -2px 4px rgba(217, 119, 6, 0.12);
-  color: #92400e;
+  background: #e8ece3;
+  box-shadow: none;
+  color: #3e4f3a;
+  border-left: 3px solid #4a5d45;
 }
 
 .clay-badge-mint {
-  background: #e8f7f0;
-  color: #0d9488;
-  border: 1px solid #ccfbef;
-  box-shadow:
-    inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.9),
-    inset -1.5px -1.5px 3px rgba(13, 148, 136, 0.14),
-    2px 3px 6px rgba(13, 148, 136, 0.08);
+  background: #eef3ea;
+  color: #4a5d45;
+  border: 1px solid #dce6d6;
+  box-shadow: none;
 }

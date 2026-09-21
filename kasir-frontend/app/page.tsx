@@ -53,7 +53,7 @@ export default function Home() {
   const totalStok = produk.reduce((sum, p) => sum + Number(p.stok), 0);
   const totalNilai = produk.reduce(
     (sum, p) => sum + Number(p.harga) * Number(p.stok),
-    0,
+    0
   );
 
   return (
@@ -204,4 +204,4 @@ export default function Home() {
       </section>
     </div>
   );
-}
+} 

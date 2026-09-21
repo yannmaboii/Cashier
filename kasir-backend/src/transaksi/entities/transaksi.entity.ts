@@ -65,6 +65,9 @@ export class TransaksiItem {
   @Column('decimal')
   hargaSatuan: number;
 
+  @Column({ type: 'decimal', nullable: true })
+  modalSatuan: number;
+
   @Column('decimal')
   subtotal: number;
 }

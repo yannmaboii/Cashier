@@ -13,9 +13,11 @@ export default function ShellWrapper({
   const pathname = usePathname();
 
   const noShell =
-    pathname === "/login" ||
-    pathname === "/register" ||
-    pathname.startsWith("/akun");
+  pathname === "/login" ||
+  pathname === "/register" ||
+  pathname.startsWith("/akun") ||
+  pathname.startsWith("/cetak-resi") ||
+  pathname.startsWith("/auth/google");
 
   if (noShell) {
     return <>{children}</>;

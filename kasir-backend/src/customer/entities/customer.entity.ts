@@ -13,4 +13,10 @@ export class Customer {
 
   @Column({ nullable: true })
   email: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  alamat: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  foto: string | null;
 }

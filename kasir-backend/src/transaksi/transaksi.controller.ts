@@ -38,6 +38,12 @@ export class TransaksiController {
     return this.transaksiService.findAll();
   }
 
+  @Roles('admin')
+  @Get('rekap-dana')
+  rekapDana() {
+    return this.transaksiService.rekapDana();
+  }
+
   @Roles('admin', 'kasir', 'customer')
   @Get(':id')
   findOne(@Param('id') id: string) {

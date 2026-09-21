@@ -11,6 +11,9 @@ export class Produk {
   @Column('decimal')
   harga: number;
 
+  @Column({ type: 'decimal', nullable: true })
+  hargaModal: number | null;
+
   @Column()
   stok: number;
 

@@ -24,8 +24,24 @@ export class CustomerService {
     return this.customerRepository.findOneBy({ id });
   }
 
+  findByEmail(email: string) {
+    return this.customerRepository.findOneBy({ email });
+  }
+
   update(id: number, updateCustomerDto: UpdateCustomerDto) {
     return this.customerRepository.update(id, updateCustomerDto);
+  }
+
+  async updateByEmail(email: string, updateCustomerDto: UpdateCustomerDto) {
+    const customer = await this.customerRepository.findOneBy({ email });
+    if (!customer) return null;
+    return this.customerRepository.update(customer.id, updateCustomerDto);
+  }
+
+  async updateFotoByEmail(email: string, fotoPath: string) {
+    const customer = await this.customerRepository.findOneBy({ email });
+    if (!customer) return null;
+    return this.customerRepository.update(customer.id, { foto: fotoPath });
   }
 
   remove(id: number) {

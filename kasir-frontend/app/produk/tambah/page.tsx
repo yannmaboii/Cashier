@@ -10,6 +10,7 @@ export default function TambahProduk() {
 
   const [nama, setNama] = useState("");
   const [harga, setHarga] = useState("");
+  const [hargaModal, setHargaModal] = useState("");
   const [stok, setStok] = useState("");
   const [kategori, setKategori] = useState("");
   const [foto, setFoto] = useState<File | null>(null);
@@ -35,6 +36,7 @@ export default function TambahProduk() {
         body: JSON.stringify({
           nama,
           harga: Number(harga),
+          hargaModal: hargaModal ? Number(hargaModal) : undefined,
           stok: Number(stok),
           kategori,
         }),
@@ -114,13 +116,26 @@ export default function TambahProduk() {
 
           <div className="mb-4">
             <label className="block text-sm font-semibold text-slate-600 mb-1.5">
-              Harga
+              Harga Jual
             </label>
             <input
               type="number"
               value={harga}
               onChange={(e) => setHarga(e.target.value)}
               required
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-300"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-semibold text-slate-600 mb-1.5">
+              Harga Modal
+            </label>
+            <input
+              type="number"
+              value={hargaModal}
+              onChange={(e) => setHargaModal(e.target.value)}
+              placeholder="Opsional, buat hitung untung di Rekap Dana"
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-300"
             />
           </div>

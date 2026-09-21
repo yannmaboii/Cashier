@@ -5,11 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Transaksi, TransaksiItem } from './entities/transaksi.entity.js';
 import { Produk } from '../produk/entities/produk.entity.js';
 import { CreateTransaksiDto } from './dto/create-transaksi.dto.js';
 import { PembayaranService } from '../pembayaran/pembayaran.service.js';
+import { SheetsService } from '../sheets/sheets.service.js';
 
 const STATUS_VALID = [
   'menunggu_pembayaran',
@@ -19,6 +20,8 @@ const STATUS_VALID = [
   'selesai',
   'dibatalkan',
 ];
+
+const STATUS_BERHASIL = ['dibayar', 'diproses', 'dikirim', 'selesai'];
 
 function generateKodeTransaksi(): string {
   const waktu = Date.now().toString(36).toUpperCase();
@@ -36,7 +39,39 @@ export class TransaksiService {
     @InjectRepository(Produk)
     private produkRepository: Repository<Produk>,
     private pembayaranService: PembayaranService,
+    private sheetsService: SheetsService,
   ) {}
+
+  private syncKeSheets(transaksi: Transaksi) {
+    const tanggal = new Date(transaksi.createdAt).toLocaleDateString(
+      'id-ID',
+      { day: '2-digit', month: '2-digit', year: 'numeric' },
+    );
+
+    const rows = transaksi.items.map((item) => {
+      const hargaSatuan = Number(item.hargaSatuan);
+      const modalSatuan = Number(item.modalSatuan || 0);
+      const jumlah = Number(item.jumlah);
+      const subtotal = Number(item.subtotal);
+      const untung = subtotal - modalSatuan * jumlah;
+
+      return [
+        tanggal,
+        transaksi.kodeTransaksi || '-',
+        item.produk?.nama ?? '-',
+        jumlah,
+        hargaSatuan,
+        modalSatuan,
+        subtotal,
+        untung,
+        transaksi.status,
+      ];
+    });
+
+    if (rows.length > 0) {
+      this.sheetsService.appendRows(rows);
+    }
+  }
 
   async create(
     createTransaksiDto: CreateTransaksiDto,
@@ -69,6 +104,7 @@ export class TransaksiService {
         produk,
         jumlah: itemDto.jumlah,
         hargaSatuan: produk.harga,
+        modalSatuan: produk.hargaModal ?? 0,
         subtotal,
       });
       items.push(item);
@@ -97,6 +133,15 @@ export class TransaksiService {
     });
 
     const savedTransaksi = await this.transaksiRepository.save(transaksi);
+
+    if (!isCustomerOrder) {
+      // Transaksi kasir offline langsung "selesai", sync ke sheet sekarang
+      const lengkap = await this.transaksiRepository.findOne({
+        where: { id: savedTransaksi.id },
+        relations: { items: { produk: true } },
+      });
+      if (lengkap) this.syncKeSheets(lengkap);
+    }
 
     if (isCustomerOrder) {
       const pembayaran = await this.pembayaranService.buatTransaksi({
@@ -138,7 +183,10 @@ export class TransaksiService {
   }
 
   async bayar(id: number, email: string) {
-    const transaksi = await this.transaksiRepository.findOneBy({ id });
+    const transaksi = await this.transaksiRepository.findOne({
+      where: { id },
+      relations: { items: { produk: true } },
+    });
 
     if (!transaksi) {
       throw new NotFoundException('Transaksi tidak ditemukan');
@@ -155,7 +203,9 @@ export class TransaksiService {
     }
 
     transaksi.status = 'dibayar';
-    return this.transaksiRepository.save(transaksi);
+    const hasil = await this.transaksiRepository.save(transaksi);
+    this.syncKeSheets(transaksi);
+    return hasil;
   }
 
   async updateStatus(id: number, status: string) {
@@ -174,16 +224,83 @@ export class TransaksiService {
   }
 
   async updateStatusByKode(kodeTransaksi: string, status: string) {
-    const transaksi = await this.transaksiRepository.findOneBy({
-      kodeTransaksi,
+    const transaksi = await this.transaksiRepository.findOne({
+      where: { kodeTransaksi },
+      relations: { items: { produk: true } },
     });
 
     if (!transaksi) {
       return null;
     }
 
+    const statusSebelumnya = transaksi.status;
     transaksi.status = status;
-    return this.transaksiRepository.save(transaksi);
+    const hasil = await this.transaksiRepository.save(transaksi);
+
+    if (status === 'dibayar' && statusSebelumnya !== 'dibayar') {
+      this.syncKeSheets(transaksi);
+    }
+
+    return hasil;
+  }
+
+  async rekapDana() {
+    const transaksiList = await this.transaksiRepository.find({
+      where: { status: In(STATUS_BERHASIL) },
+      relations: { items: { produk: true } },
+      order: { createdAt: 'DESC' },
+    });
+
+    let totalPendapatan = 0;
+    let totalModal = 0;
+
+    const rincian = transaksiList.map((t) => {
+      let pendapatanTransaksi = 0;
+      let modalTransaksi = 0;
+
+      const items = t.items.map((item) => {
+        const hargaSatuan = Number(item.hargaSatuan);
+        const modalSatuan = Number(item.modalSatuan || 0);
+        const jumlah = Number(item.jumlah);
+        const subtotal = Number(item.subtotal);
+        const modal = modalSatuan * jumlah;
+        const untung = subtotal - modal;
+
+        pendapatanTransaksi += subtotal;
+        modalTransaksi += modal;
+
+        return {
+          produk: item.produk?.nama ?? '-',
+          jumlah,
+          hargaSatuan,
+          modalSatuan,
+          subtotal,
+          untung,
+        };
+      });
+
+      totalPendapatan += pendapatanTransaksi;
+      totalModal += modalTransaksi;
+
+      return {
+        id: t.id,
+        kodeTransaksi: t.kodeTransaksi,
+        createdAt: t.createdAt,
+        status: t.status,
+        ongkosKirim: Number(t.ongkosKirim || 0),
+        items,
+        pendapatanTransaksi,
+        modalTransaksi,
+        untungTransaksi: pendapatanTransaksi - modalTransaksi,
+      };
+    });
+
+    return {
+      totalPendapatan,
+      totalModal,
+      totalUntung: totalPendapatan - totalModal,
+      transaksi: rincian,
+    };
   }
 
   remove(id: number) {
